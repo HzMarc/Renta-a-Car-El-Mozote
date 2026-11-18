@@ -28,10 +28,14 @@ public class Reservation implements Serializable {
     private String observations;
     private String status;
     private long createdAt;
+    private int initialMileage;
+    private String initialFuelLevel;
 
     public Reservation() {
         this.status = STATUS_RESERVED;
         this.createdAt = System.currentTimeMillis();
+        this.initialMileage = 0;
+        this.initialFuelLevel = "Lleno (4/4)";
     }
 
     public Reservation(long id, long vehicleId, String vehicleTitle, String vehiclePlate,
@@ -201,6 +205,22 @@ public class Reservation implements Serializable {
 
     public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public int getInitialMileage() {
+        return initialMileage;
+    }
+
+    public void setInitialMileage(int initialMileage) {
+        this.initialMileage = Math.max(0, initialMileage);
+    }
+
+    public String getInitialFuelLevel() {
+        return initialFuelLevel != null ? initialFuelLevel : "Lleno (4/4)";
+    }
+
+    public void setInitialFuelLevel(String initialFuelLevel) {
+        this.initialFuelLevel = initialFuelLevel;
     }
 
     public String getFormattedTotalCost() {

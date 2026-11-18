@@ -18,7 +18,7 @@ import java.util.Locale;
 public class ReservationDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "el_mozote_reservations.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Table Reservations
     public static final String TABLE_RESERVATIONS = "reservations";
@@ -40,6 +40,8 @@ public class ReservationDatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_RES_OBSERVATIONS = "observations";
     public static final String COL_RES_STATUS = "status";
     public static final String COL_RES_CREATED_AT = "created_at";
+    public static final String COL_RES_INITIAL_MILEAGE = "initial_mileage";
+    public static final String COL_RES_INITIAL_FUEL = "initial_fuel";
 
     // Table Inspections
     public static final String TABLE_INSPECTIONS = "inspections";
@@ -90,7 +92,9 @@ public class ReservationDatabaseHelper extends SQLiteOpenHelper {
                 + COL_RES_TOTAL_COST + " REAL NOT NULL, "
                 + COL_RES_OBSERVATIONS + " TEXT, "
                 + COL_RES_STATUS + " TEXT NOT NULL, "
-                + COL_RES_CREATED_AT + " INTEGER"
+                + COL_RES_CREATED_AT + " INTEGER, "
+                + COL_RES_INITIAL_MILEAGE + " INTEGER NOT NULL DEFAULT 0, "
+                + COL_RES_INITIAL_FUEL + " TEXT NOT NULL DEFAULT 'Lleno (4/4)'"
                 + ")";
         db.execSQL(createResTable);
 
@@ -243,9 +247,13 @@ public class ReservationDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INSPECTIONS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RESERVATIONS);
-        onCreate(db);
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE " + TABLE_RESERVATIONS
+                    + " ADD COLUMN " + COL_RES_INITIAL_MILEAGE + " INTEGER NOT NULL DEFAULT 0");
+            db.execSQL("ALTER TABLE " + TABLE_RESERVATIONS
+                    + " ADD COLUMN " + COL_RES_INITIAL_FUEL
+                    + " TEXT NOT NULL DEFAULT 'Lleno (4/4)'");
+        }
     }
 
     // =========================================================================

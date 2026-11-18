@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="OdometerGaugeView">
+        <attr name="odometerMin" format="float" />
+        <attr name="odometerMax" format="float" />
+        <attr name="odometerStep" format="float" />
+        <attr name="odometerFuelMode" format="boolean" />
+    </declare-styleable>
+</resources>

@@ -112,7 +112,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Kilometraje Registrado"
+                                android:text="Odómetro de kilometraje"
                                 android:textColor="@color/slate_muted"
                                 android:textSize="11sp" />
                             <TextView
@@ -133,7 +133,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Nivel de Combustible"
+                                android:text="Odómetro de gasolina"
                                 android:textColor="@color/slate_muted"
                                 android:textSize="11sp" />
                             <TextView

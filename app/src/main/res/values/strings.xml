@@ -122,8 +122,8 @@
     <string name="reservation_btn_save">Confirmar y Guardar Reserva</string>
     <string name="reservation_inspection_departure_title">Inspección de Salida</string>
     <string name="reservation_inspection_return_title">Inspección de Regreso</string>
-    <string name="reservation_inspection_mileage">Kilometraje</string>
-    <string name="reservation_inspection_fuel">Nivel de combustible</string>
+    <string name="reservation_inspection_mileage">Odómetro de kilometraje</string>
+    <string name="reservation_inspection_fuel">Odómetro de gasolina</string>
     <string name="reservation_inspection_exterior">Estado exterior</string>
     <string name="reservation_inspection_interior">Estado interior</string>
     <string name="reservation_inspection_spare_tire">Llanta de repuesto en buen estado</string>

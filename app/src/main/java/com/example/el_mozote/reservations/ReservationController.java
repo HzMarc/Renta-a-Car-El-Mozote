@@ -232,6 +232,39 @@ public class ReservationController {
         TextInputEditText editEndDate = view.findViewById(R.id.editResEndDate);
         TextInputEditText editDailyRate = view.findViewById(R.id.editResDailyRate);
         TextInputEditText editObservations = view.findViewById(R.id.editResObservations);
+        OdometerGaugeView initialMileageGauge = view.findViewById(R.id.gaugeResInitialMileage);
+        OdometerGaugeView initialFuelGauge = view.findViewById(R.id.gaugeResInitialFuel);
+        TextView txtInitialMileage = view.findViewById(R.id.txtResInitialMileage);
+        TextView txtInitialFuel = view.findViewById(R.id.txtResInitialFuel);
+        final int[] initialMileage = new int[]{0};
+        final int[] initialFuel = new int[]{4};
+
+        initialMileageGauge.setRange(0f, 300000f, 10f);
+        initialMileageGauge.setValue(0f, false);
+        initialMileageGauge.setOnValueChangeListener(value -> {
+            initialMileage[0] = (int) value;
+            txtInitialMileage.setText(String.format(Locale.US, "%,d km", initialMileage[0]));
+        });
+        view.findViewById(R.id.btnResMileageMinus10).setOnClickListener(v ->
+                initialMileageGauge.setValue(
+                        Math.max(0f, initialMileageGauge.getGaugeValue() - 10f), true));
+        view.findViewById(R.id.btnResMileagePlus10).setOnClickListener(v ->
+                initialMileageGauge.setValue(
+                        Math.min(300000f, initialMileageGauge.getGaugeValue() + 10f), true));
+        view.findViewById(R.id.btnResMileageMinus100).setOnClickListener(v ->
+                initialMileageGauge.setValue(
+                        Math.max(0f, initialMileageGauge.getGaugeValue() - 100f), true));
+        view.findViewById(R.id.btnResMileagePlus100).setOnClickListener(v ->
+                initialMileageGauge.setValue(
+                        Math.min(300000f, initialMileageGauge.getGaugeValue() + 100f), true));
+
+        initialFuelGauge.setFuelMode(true);
+        initialFuelGauge.setValue(4f, false);
+        initialFuelGauge.setOnValueChangeListener(value -> {
+            initialFuel[0] = Math.round(value);
+            String[] labels = {"Vacío", "1/4", "Medio", "3/4", "Lleno"};
+            txtInitialFuel.setText(initialFuel[0] + " / 4 — " + labels[initialFuel[0]]);
+        });
 
         TextView txtCalcDays = view.findViewById(R.id.txtResCalculatedDays);
         TextView txtCalcTotal = view.findViewById(R.id.txtResCalculatedTotal);
@@ -528,7 +561,7 @@ public class ReservationController {
             badgeSalida.setTextColor(ContextCompat.getColor(activity, R.color.emerald_on_container_light));
             badgeSalida.setBackgroundResource(R.drawable.bg_status_available);
             Inspection depInsp = resDbHelper.getInspectionByReservationAndType(res.getId(), Inspection.TYPE_DEPARTURE);
-            sumSalida.setText("Kilometraje registrado: " + (depInsp != null ? depInsp.getMileage() + " km" : ""));
+            sumSalida.setText("Odómetro de salida: " + (depInsp != null ? depInsp.getMileage() + " km" : ""));
             btnDoSalida.setVisibility(View.GONE);
             btnViewSalida.setVisibility(View.VISIBLE);
             btnViewSalida.setOnClickListener(v -> showInspectionDetail(res, Inspection.TYPE_DEPARTURE));
@@ -555,7 +588,7 @@ public class ReservationController {
             badgeRegreso.setTextColor(ContextCompat.getColor(activity, R.color.emerald_on_container_light));
             badgeRegreso.setBackgroundResource(R.drawable.bg_status_available);
             Inspection retInsp = resDbHelper.getInspectionByReservationAndType(res.getId(), Inspection.TYPE_RETURN);
-            sumRegreso.setText("Kilometraje final: " + (retInsp != null ? retInsp.getMileage() + " km" : ""));
+            sumRegreso.setText("Odómetro de regreso: " + (retInsp != null ? retInsp.getMileage() + " km" : ""));
             btnDoRegreso.setVisibility(View.GONE);
             btnViewRegreso.setVisibility(View.VISIBLE);
             btnViewRegreso.setOnClickListener(v -> showInspectionDetail(res, Inspection.TYPE_RETURN));
@@ -682,7 +715,7 @@ public class ReservationController {
             Inspection dep = resDbHelper.getInspectionByReservationAndType(res.getId(), Inspection.TYPE_DEPARTURE);
             if (dep != null) {
                 departureMileageHolder[0] = dep.getMileage();
-                txtInitKm.setText("Kilometraje inicial registrado: " + dep.getMileage() + " km");
+                txtInitKm.setText("Odómetro inicial registrado: " + dep.getMileage() + " km");
             }
         } else {
             banner.setVisibility(View.GONE);
@@ -690,9 +723,16 @@ public class ReservationController {
         }
 
         // Inputs
-        TextInputLayout layoutKm = view.findViewById(R.id.layoutInspMileage);
         TextInputEditText editKm = view.findViewById(R.id.editInspMileage);
         TextInputEditText editFuel = view.findViewById(R.id.editInspFuel);
+        TextView txtMileageOdometer = view.findViewById(R.id.txtInspMileageOdometer);
+        TextView txtFuelLevel = view.findViewById(R.id.txtInspFuelLevel);
+        OdometerGaugeView mileageGauge = view.findViewById(R.id.gaugeInspMileage);
+        OdometerGaugeView fuelGauge = view.findViewById(R.id.gaugeInspFuel);
+        View btnMileageMinus10 = view.findViewById(R.id.btnInspMileageMinus);
+        View btnMileagePlus10 = view.findViewById(R.id.btnInspMileagePlus);
+        View btnMileageMinus100 = view.findViewById(R.id.btnInspMileageMinus100);
+        View btnMileagePlus100 = view.findViewById(R.id.btnInspMileagePlus100);
         TextInputEditText editExterior = view.findViewById(R.id.editInspExterior);
         TextInputEditText editInterior = view.findViewById(R.id.editInspInterior);
         MaterialSwitch switchSpare = view.findViewById(R.id.switchSpareTire);
@@ -703,6 +743,42 @@ public class ReservationController {
         // Preload mileage hint
         if (!isDeparture && departureMileageHolder[0] > 0) {
             editKm.setText(String.valueOf(departureMileageHolder[0] + 50));
+        }
+        final int[] mileageValue = new int[]{editKm.getText() == null
+                ? 0 : parseMileage(editKm.getText().toString())};
+        if (txtMileageOdometer != null) {
+            txtMileageOdometer.setText(String.format(Locale.US, "%,d km", mileageValue[0]));
+        }
+        if (mileageGauge != null) {
+            mileageGauge.setRange(0f, 300000f, 10f);
+            mileageGauge.setValue(mileageValue[0], false);
+            mileageGauge.setOnValueChangeListener(gaugeValue -> {
+                int gaugeMileage = (int) gaugeValue;
+                mileageValue[0] = gaugeMileage;
+                editKm.setText(String.valueOf(gaugeMileage));
+                txtMileageOdometer.setText(String.format(Locale.US, "%,d km", gaugeMileage));
+            });
+        }
+
+        btnMileageMinus10.setOnClickListener(v -> mileageGauge.setValue(
+                Math.max(0f, mileageGauge.getGaugeValue() - 10f), true));
+        btnMileagePlus10.setOnClickListener(v -> mileageGauge.setValue(
+                Math.min(300000f, mileageGauge.getGaugeValue() + 10f), true));
+        btnMileageMinus100.setOnClickListener(v -> mileageGauge.setValue(
+                Math.max(0f, mileageGauge.getGaugeValue() - 100f), true));
+        btnMileagePlus100.setOnClickListener(v -> mileageGauge.setValue(
+                Math.min(300000f, mileageGauge.getGaugeValue() + 100f), true));
+
+        if (fuelGauge != null) {
+            fuelGauge.setFuelMode(true);
+            fuelGauge.setOnValueChangeListener(gaugeValue -> {
+                int level = Math.round(gaugeValue);
+                String[] labels = {"Vacío", "1/4", "Medio", "3/4", "Lleno"};
+                String text = labels[level] + " (" + level + "/4)";
+                txtFuelLevel.setText(level + " / 4 — " + labels[level]);
+                editFuel.setText(text);
+            });
+            fuelGauge.setValue(4f, false);
         }
 
         // Photos
@@ -724,10 +800,9 @@ public class ReservationController {
                 : "Guardar Inspección y Finalizar Renta");
 
         btnSave.setOnClickListener(v -> {
-            layoutKm.setError(null);
             String kmStr = text(editKm);
             if (TextUtils.isEmpty(kmStr)) {
-                layoutKm.setError("Ingresa el kilometraje actual");
+                Snackbar.make(mainContent, "Ingresa el odómetro de kilometraje", Snackbar.LENGTH_SHORT).show();
                 return;
             }
 
@@ -735,17 +810,19 @@ public class ReservationController {
             try {
                 mileage = Integer.parseInt(kmStr);
                 if (mileage < 0) {
-                    layoutKm.setError("Kilometraje inválido");
+                    Snackbar.make(mainContent, "Odómetro de kilometraje inválido", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
             } catch (NumberFormatException e) {
-                layoutKm.setError("Número inválido");
+                Snackbar.make(mainContent, "Número de odómetro inválido", Snackbar.LENGTH_SHORT).show();
                 return;
             }
 
-            // Validación REGLA OBLIGATORIA: Kilometraje final no puede ser menor al inicial
+            // El odómetro final no puede retroceder respecto al odómetro inicial
             if (!isDeparture && departureMileageHolder[0] > 0 && mileage < departureMileageHolder[0]) {
-                layoutKm.setError("El kilometraje final (" + mileage + " km) no puede ser menor al inicial (" + departureMileageHolder[0] + " km)");
+                Snackbar.make(mainContent,
+                        "El odómetro final no puede ser menor al inicial",
+                        Snackbar.LENGTH_LONG).show();
                 return;
             }
 
@@ -891,5 +968,13 @@ public class ReservationController {
 
     private String text(TextInputEditText edit) {
         return edit.getText() == null ? "" : edit.getText().toString().trim();
+    }
+
+    private int parseMileage(String value) {
+        try {
+            return Integer.parseInt(value.replace(",", "").trim());
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }

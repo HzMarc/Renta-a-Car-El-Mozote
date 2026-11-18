@@ -392,6 +392,121 @@
                     android:inputType="numberDecimal" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Odómetros iniciales -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Lecturas iniciales del vehículo"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="@color/obsidian_navy"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <com.example.el_mozote.reservations.OdometerGaugeView
+                        android:id="@+id/gaugeResInitialMileage"
+                        android:layout_width="match_parent"
+                        android:layout_height="160dp"
+                        app:odometerMin="0"
+                        app:odometerMax="300000"
+                        app:odometerStep="10" />
+
+                    <TextView
+                        android:id="@+id/txtResInitialMileage"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/status_badge_inactive"
+                        android:gravity="center"
+                        android:text="0 km"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="@color/obsidian_navy"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnResMileageMinus10"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="42dp"
+                            android:layout_height="40dp"
+                            android:text="-10"
+                            android:textSize="10sp"
+                            app:cornerRadius="10dp" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnResMileagePlus10"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="42dp"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="6dp"
+                            android:text="+10"
+                            android:textSize="10sp"
+                            app:cornerRadius="10dp" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnResMileageMinus100"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="48dp"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="6dp"
+                            android:text="-100"
+                            android:textSize="10sp"
+                            app:cornerRadius="10dp" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnResMileagePlus100"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="48dp"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="6dp"
+                            android:text="+100"
+                            android:textSize="10sp"
+                            app:cornerRadius="10dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <com.example.el_mozote.reservations.OdometerGaugeView
+                        android:id="@+id/gaugeResInitialFuel"
+                        android:layout_width="match_parent"
+                        android:layout_height="160dp"
+                        app:odometerMin="0"
+                        app:odometerMax="4"
+                        app:odometerStep="1"
+                        app:odometerFuelMode="true" />
+
+                    <TextView
+                        android:id="@+id/txtResInitialFuel"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/status_badge_active"
+                        android:gravity="center"
+                        android:text="4 / 4 — Lleno"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="@color/emerald_dark"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
             <!-- Resumen Costo Estimado -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"

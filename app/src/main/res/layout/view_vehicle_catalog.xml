@@ -273,12 +273,13 @@
                 android:visibility="gone">
 
                 <ImageView
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:background="@drawable/brand_placeholder"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:background="@drawable/logo_container"
                     android:contentDescription="@string/vehicle_title"
-                    android:padding="18dp"
-                    android:src="@drawable/ic_brand_car" />
+                    android:padding="6dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_mozote_logo" />
 
                 <TextView
                     android:layout_width="wrap_content"

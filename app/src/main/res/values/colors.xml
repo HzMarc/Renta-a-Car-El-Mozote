@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="welcome_primary">#1E2430</color>
+    <color name="welcome_secondary">#46505F</color>
+    <color name="brand_surface">#FFF7F0</color>
+    <color name="brand_primary">#D9682B</color>
+    <color name="brand_primary_dark">#A94718</color>
+    <color name="brand_accent">#F4B183</color>
+    <color name="emerald_primary">#10B981</color>
+    <color name="emerald_vibrant">#34D399</color>
+    <color name="emerald_container_light">#D1FAE5</color>
+    <color name="emerald_on_container_light">#065F46</color>
+    <color name="amber_brand">#F59E0B</color>
+    <color name="sky_primary">#0EA5E9</color>
+    <color name="sky_container_light">#E0F2FE</color>
+    <color name="crimson_alert">#EF4444</color>
+    <color name="background_light">#F8FAFC</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_variant_light">#F1F5F9</color>
+    <color name="outline_light">#E2E8F0</color>
+    <color name="obsidian_navy">#334155</color>
+    <color name="slate_charcoal">#475569</color>
+    <color name="slate_muted">#64748B</color>
+</resources>

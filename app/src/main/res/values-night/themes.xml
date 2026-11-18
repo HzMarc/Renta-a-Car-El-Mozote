@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.El_Mozote" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/emerald_vibrant</item>
+        <item name="colorPrimaryContainer">@color/emerald_container_light</item>
+        <item name="colorOnPrimaryContainer">@color/emerald_on_container_light</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+</resources>

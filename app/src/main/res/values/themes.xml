@@ -1,0 +1,54 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.El_Mozote" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/emerald_primary</item>
+        <item name="colorPrimaryContainer">@color/emerald_container_light</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimaryContainer">@color/emerald_on_container_light</item>
+        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorSurfaceContainer">@color/surface_variant_light</item>
+        <item name="colorOnSurface">@color/obsidian_navy</item>
+        <item name="colorOnSurfaceVariant">@color/slate_muted</item>
+        <item name="colorOutline">@color/outline_light</item>
+        <item name="android:colorBackground">@color/background_light</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.El_Mozote" parent="Base.Theme.El_Mozote" />
+ 
+    <style name="Widget.ElMozote.BottomNavigation.ActiveIndicator" parent="">
+        <item name="android:width">48dp</item>
+        <item name="android:height">28dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.ElMozote.BottomNavigationIndicator</item>
+        <item name="android:color">@color/emerald_container_light</item>
+    </style>
+
+    <style name="ShapeAppearance.ElMozote.BottomNavigationIndicator" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="ThemeOverlay.ElMozote.BottomSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.ElMozote.BottomSheet</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:backgroundDimAmount">0</item>
+    </style>
+
+    <style name="Widget.ElMozote.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="shapeAppearance">@style/ShapeAppearance.ElMozote.BottomSheet</item>
+        <item name="backgroundTint">?attr/colorSurface</item>
+    </style>
+
+    <style name="ShapeAppearance.ElMozote.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+</resources>

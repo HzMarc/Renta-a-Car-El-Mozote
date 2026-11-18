@@ -21,6 +21,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".VehiclesActivity" android:exported="false" />
+        <activity android:name=".ReservationsActivity" android:exported="false" />
+        <activity android:name=".UserManagementActivity" android:exported="false" />
+        <activity android:name=".ProfileActivity" android:exported="false" />
     </application>
 
 </manifest>

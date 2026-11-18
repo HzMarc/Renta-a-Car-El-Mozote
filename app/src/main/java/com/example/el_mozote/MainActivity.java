@@ -1,6 +1,8 @@
 package com.example.el_mozote;
 
 import android.content.res.ColorStateList;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -41,6 +43,9 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
 
     private BottomSheetDialog authSheet;
@@ -80,8 +85,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setupBottomNavigation();
+        ensureStaticData();
         MaterialButton startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(v -> openAuthBottomSheet());
+    }
+
+    private void ensureStaticData() {
+        SharedPreferences preferences = getSharedPreferences("el_mozote", MODE_PRIVATE);
+        UserCredentials.ensureUnifiedAdminRecord(this, preferences.getString("users", null));
     }
 
     private void openAuthBottomSheet() {
@@ -124,16 +135,21 @@ public class MainActivity extends AppCompatActivity {
         sheetView.findViewById(R.id.loginButton).setOnClickListener(v -> {
             loginEmailLayout.setError(null);
             loginPasswordLayout.setError(null);
-            boolean valid = true;
-            if (TextUtils.isEmpty(text(loginEmail))) {
+            String identifier = text(loginEmail);
+            String password = text(loginPassword);
+            if (TextUtils.isEmpty(identifier)) {
                 loginEmailLayout.setError("Ingresa usuario o correo");
-                valid = false;
+                return;
             }
-            if (TextUtils.isEmpty(text(loginPassword))) {
+            if (TextUtils.isEmpty(password)) {
                 loginPasswordLayout.setError("Ingresa una contraseña");
-                valid = false;
+                return;
             }
-            if (valid) enterApp();
+            if (UserCredentials.authenticate(this, identifier, password)) {
+                enterApp();
+            } else {
+                loginPasswordLayout.setError("Usuario o contraseña incorrectos");
+            }
         });
 
         sheetView.findViewById(R.id.googleButton).setOnClickListener(v ->
@@ -165,11 +181,16 @@ public class MainActivity extends AppCompatActivity {
                 registerPassword.setError("Ingresa una contraseña");
                 return;
             }
+            if (text(registerPassword).length() < 6) {
+                registerPassword.setError("La contraseña debe tener al menos 6 caracteres");
+                return;
+            }
             if (!text(registerPassword).equals(text(registerConfirm))) {
                 registerConfirm.setError("Las contraseñas no coinciden");
                 return;
             }
-            enterApp();
+            if (registerUser(text(registerName), text(registerEmail),
+                    text(registerPassword))) enterApp();
         });
 
         authSheet.show();
@@ -186,6 +207,52 @@ public class MainActivity extends AppCompatActivity {
         appShell.animate().alpha(1f).setDuration(260).start();
         selectNavItem(R.id.nav_home);
         showDestination(R.id.nav_home);
+    }
+
+    private boolean registerUser(String name, String email, String password) {
+        String normalizedEmail = email.trim().toLowerCase(java.util.Locale.ROOT);
+        SharedPreferences preferences = getSharedPreferences("el_mozote", MODE_PRIVATE);
+
+        try {
+            JSONArray users = new JSONArray(preferences.getString("users", "[]"));
+            String username = normalizedEmail.contains("@")
+                    ? normalizedEmail.substring(0, normalizedEmail.indexOf('@'))
+                    : normalizedEmail;
+
+            for (int i = 0; i < users.length(); i++) {
+                JSONObject user = users.getJSONObject(i);
+                if (normalizedEmail.equalsIgnoreCase(user.optString("email", ""))
+                        || username.equalsIgnoreCase(user.optString("username", ""))) {
+                    Toast.makeText(this, "Ese correo o usuario ya está registrado", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
+
+            int nextId = 1;
+            for (int i = 0; i < users.length(); i++) {
+                nextId = Math.max(nextId, users.getJSONObject(i).optInt("id", 0) + 1);
+            }
+
+            JSONObject user = new JSONObject();
+            user.put("id", nextId);
+            user.put("name", name.trim());
+            user.put("username", username);
+            user.put("email", normalizedEmail);
+            user.put("phone", "");
+            user.put("role", "Cliente");
+            user.put("status", "Activo");
+            user.put("passwordHash", UserCredentials.hash(password));
+            users.put(user);
+
+            preferences.edit()
+                    .putString("users", users.toString())
+                    .apply();
+            UserCredentials.saveSession(this, username, normalizedEmail, name.trim(), "Cliente");
+            return true;
+        } catch (Exception e) {
+            Toast.makeText(this, "No se pudo crear la cuenta", Toast.LENGTH_SHORT).show();
+            return false;
+        }
     }
 
     private void setupBottomNavigation() {
@@ -223,42 +290,47 @@ public class MainActivity extends AppCompatActivity {
 
     private void showDestination(int itemId) {
         mainContent.removeAllViews();
-        if (itemId == R.id.nav_users) {
-            showUserManagement();
-            mainToolbar.setTitle(R.string.nav_users);
-        } else {
-            String title;
-            String description;
-            if (itemId == R.id.nav_home) {
-                title = getString(R.string.nav_home);
-                description = "Resumen de reservas, vehículos disponibles y actividad reciente.";
-            } else if (itemId == R.id.nav_vehicles) {
-                title = getString(R.string.nav_vehicles);
-                description = "Inventario, disponibilidad, mantenimiento y precios de vehículos.";
-            } else if (itemId == R.id.nav_reservations) {
-                title = getString(R.string.nav_reservations);
-                description = "Reservas pendientes, activas, completadas y canceladas.";
-            } else {
-                title = getString(R.string.nav_profile);
-                description = "Datos de la cuenta demo, preferencias y cierre de sesión.";
-            }
-            mainToolbar.setTitle(title);
-            LinearLayout placeholder = new LinearLayout(this);
-            placeholder.setOrientation(LinearLayout.VERTICAL);
-            placeholder.setGravity(android.view.Gravity.CENTER);
-            int padding = (int) (24 * getResources().getDisplayMetrics().density);
-            placeholder.setPadding(padding, padding, padding, padding);
-            TextView heading = new TextView(this);
-            heading.setText(title);
-            heading.setTextAppearance(this, android.R.style.TextAppearance_Material_Headline);
-            TextView body = new TextView(this);
-            body.setText(description);
-            body.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            body.setPadding(0, (int) (8 * getResources().getDisplayMetrics().density), 0, 0);
-            placeholder.addView(heading);
-            placeholder.addView(body);
-            mainContent.addView(placeholder);
+        findViewById(R.id.appBar).setVisibility(View.VISIBLE);
+        if (itemId == R.id.nav_home) {
+            mainToolbar.setTitle(R.string.nav_home);
+            addPlaceholder(
+                    getString(R.string.nav_home),
+                    "Resumen de reservas, vehículos disponibles y actividad reciente.");
+        } else if (itemId == R.id.nav_vehicles) {
+            mainToolbar.setTitle(R.string.nav_vehicles);
+            addPlaceholder(
+                    getString(R.string.nav_vehicles),
+                    "Inventario, disponibilidad, mantenimiento y precios de vehículos.");
+        } else if (itemId == R.id.nav_reservations) {
+            mainToolbar.setTitle(R.string.nav_reservations);
+            addPlaceholder(
+                    getString(R.string.nav_reservations),
+                    "Reservas pendientes, activas, completadas y canceladas.");
+        } else if (itemId == R.id.nav_users) {
+            startActivity(new Intent(this, UserManagementActivity.class));
+            overridePendingTransition(R.anim.nav_enter, R.anim.nav_exit);
+        } else if (itemId == R.id.nav_profile) {
+            startActivity(new Intent(this, ProfileActivity.class));
+            overridePendingTransition(R.anim.nav_enter, R.anim.nav_exit);
         }
+    }
+
+    private void addPlaceholder(String title, String description) {
+        LinearLayout placeholder = new LinearLayout(this);
+        placeholder.setOrientation(LinearLayout.VERTICAL);
+        placeholder.setGravity(android.view.Gravity.CENTER);
+        int padding = (int) (24 * getResources().getDisplayMetrics().density);
+        placeholder.setPadding(padding, padding, padding, padding);
+        TextView heading = new TextView(this);
+        heading.setText(title);
+        heading.setTextAppearance(this, android.R.style.TextAppearance_Material_Headline);
+        TextView body = new TextView(this);
+        body.setText(description);
+        body.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        body.setPadding(0, (int) (8 * getResources().getDisplayMetrics().density), 0, 0);
+        placeholder.addView(heading);
+        placeholder.addView(body);
+        mainContent.addView(placeholder);
     }
 
     @Override
@@ -403,6 +475,13 @@ public class MainActivity extends AppCompatActivity {
 
     private String text(TextInputEditText editText) {
         return editText.getText() == null ? "" : editText.getText().toString().trim();
+    }
+
+    private String initials(String name) {
+        String[] parts = name.trim().split("\\s+");
+        if (parts.length == 0 || parts[0].isEmpty()) return "U";
+        if (parts.length == 1) return parts[0].substring(0, 1).toUpperCase();
+        return (parts[0].substring(0, 1) + parts[parts.length - 1].substring(0, 1)).toUpperCase();
     }
 
     private static class User {

@@ -10,6 +10,7 @@
     <color name="brand_accent">#F4B183</color>
     <color name="emerald_primary">#10B981</color>
     <color name="emerald_vibrant">#34D399</color>
+    <color name="emerald_dark">#059669</color>
     <color name="emerald_container_light">#D1FAE5</color>
     <color name="emerald_on_container_light">#065F46</color>
     <color name="amber_brand">#F59E0B</color>

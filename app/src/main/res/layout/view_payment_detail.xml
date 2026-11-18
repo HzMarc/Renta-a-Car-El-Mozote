@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light"
+    android:orientation="vertical">
+
+    <!-- Top Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/surface_light"
+        android:elevation="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp">
+
+        <ImageButton
+            android:id="@+id/btnPayDetailBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Volver"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:id="@+id/txtPayDetailTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:text="Detalle del Cobro"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textColor="@color/obsidian_navy"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Main Financial Status Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/surface_light"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeColor="@color/outline_light"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Contract & Badge -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/txtDetailContractNumber"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="monospace"
+                            android:text="CONTRATO #CTR-0001"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
+                            android:textColor="@color/obsidian_navy"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txtDetailStatusBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/badge_status_unpaid"
+                            android:text="@string/payment_status_pending"
+                            android:textColor="#B45309"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="@color/surface_variant_light" />
+
+                    <!-- Saldo Pendiente Big Callout -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/badge_status_cancelled"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SALDO PENDIENTE POR PAGAR"
+                            android:textColor="#B91C1C"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txtDetailPendingBalance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="$70.00"
+                            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                            android:textColor="#B91C1C"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Breakdown: Total Renta & Total Abonado -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total de la Renta"
+                                android:textColor="@color/slate_muted"
+                                android:textSize="11sp" />
+                            <TextView
+                                android:id="@+id/txtDetailTotalCost"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="$120.00"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textColor="@color/obsidian_navy"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total Abonado"
+                                android:textColor="@color/slate_muted"
+                                android:textSize="11sp" />
+                            <TextView
+                                android:id="@+id/txtDetailTotalPaid"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="$50.00"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textColor="@color/emerald_primary"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Progress Indicator -->
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progressDetailPayment"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="12dp"
+                        android:progress="42"
+                        app:indicatorColor="@color/emerald_primary"
+                        app:trackColor="@color/surface_variant_light"
+                        app:trackCornerRadius="4dp" />
+
+                    <TextView
+                        android:id="@+id/txtDetailPercentage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="42% completado"
+                        android:textColor="@color/slate_muted"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card: Cliente y Vehículo -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Información del Contrato"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="@color/obsidian_navy"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="@color/surface_light"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/outline_light"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cliente"
+                        android:textColor="@color/slate_muted"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/txtDetailCustName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Carlos Alberto Martínez"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textColor="@color/obsidian_navy"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtDetailCustPhone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="DUI: 04829103-5  •  Tel: +503 7890-1234"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="@color/slate_muted" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/surface_variant_light" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vehículo"
+                        android:textColor="@color/slate_muted"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/txtDetailVehicleInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hyundai Elantra  •  Placa: P 451-230"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textColor="@color/obsidian_navy"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Action Buttons: Pagar Total / Abono -->
+            <LinearLayout
+                android:id="@+id/layoutPaymentActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPayFull"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:backgroundTint="@color/emerald_primary"
+                    android:text="@string/payment_btn_pay_full"
+                    android:textAllCaps="false"
+                    app:cornerRadius="14dp"
+                    app:icon="@drawable/ic_payment" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPayAbono"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/payment_btn_pay_abono"
+                    android:textAllCaps="false"
+                    app:cornerRadius="14dp"
+                    app:icon="@drawable/ic_add" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtFullyPaidBadge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/badge_status_available"
+                android:gravity="center"
+                android:padding="14dp"
+                android:text="✓ ESTE CONTRATO HA SIDO PAGADO EN SU TOTALIDAD"
+                android:textColor="@color/emerald_on_container_light"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <!-- Transaction History of this Contract -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Historial de Transacciones del Contrato"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="@color/obsidian_navy"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerContractTransactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false" />
+
+            <TextView
+                android:id="@+id/txtNoContractTransactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/badge_plate"
+                android:padding="12dp"
+                android:text="Aún no se han registrado abonos ni pagos para este contrato."
+                android:textColor="@color/slate_muted"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <!-- Back Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPayDetailClose"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:text="Volver al Listado de Cobros"
+                android:textAllCaps="false"
+                android:textColor="@color/slate_charcoal" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

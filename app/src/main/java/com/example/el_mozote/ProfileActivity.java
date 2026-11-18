@@ -63,6 +63,12 @@ public class ProfileActivity extends AppCompatActivity {
         if (logoutButton != null) logoutButton.setOnClickListener(v -> logout());
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.nav_exit, R.anim.nav_enter);
+    }
+
     private void saveProfile() {
         String name = value(nameInput);
         String newUsername = value(usernameInput);

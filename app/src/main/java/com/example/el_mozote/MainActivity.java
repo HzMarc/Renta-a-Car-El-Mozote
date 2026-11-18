@@ -22,6 +22,8 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,8 +42,18 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import com.example.el_mozote.home.HomeController;
+import com.example.el_mozote.payments.PaymentController;
+import com.example.el_mozote.reservations.Reservation;
+import com.example.el_mozote.reservations.ReservationController;
+import com.example.el_mozote.statistics.StatisticsController;
+import com.example.el_mozote.vehicles.Vehicle;
+import com.example.el_mozote.vehicles.VehicleController;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,9 +66,18 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout mainContent;
     private MaterialToolbar mainToolbar;
     private int selectedNavId = R.id.nav_home;
+    private int displayedDestinationId = R.id.nav_home;
     private View userManagementView;
     private final List<User> users = new ArrayList<>();
     private UserAdapter userAdapter;
+    private HomeController homeController;
+    private VehicleController vehicleController;
+    private ActivityResultLauncher<String> vehiclePhotoPickerLauncher;
+    private ReservationController reservationController;
+    private ActivityResultLauncher<String> reservationPhotoPickerLauncher;
+    private PaymentController paymentController;
+    private StatisticsController statisticsController;
+    private final Map<Integer, View> destinationViews = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +105,64 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        vehiclePhotoPickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetMultipleContents(),
+                uris -> {
+                    if (uris != null && vehicleController != null) {
+                        vehicleController.onPhotosSelected(uris);
+                    }
+                });
+        vehicleController = new VehicleController(this, mainContent);
+
+        reservationPhotoPickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetMultipleContents(),
+                uris -> {
+                    if (uris != null && reservationController != null) {
+                        reservationController.onInspectionPhotosSelected(uris);
+                    }
+                });
+        reservationController = new ReservationController(this, mainContent);
+        paymentController = new PaymentController(this, mainContent);
+        statisticsController = new StatisticsController(this, mainContent);
+        homeController = new HomeController(this, mainContent);
+
+        mainToolbar.getMenu().add(0, 101, 0, R.string.payment_title)
+                .setIcon(R.drawable.ic_payment)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        mainToolbar.getMenu().add(0, 102, 1, R.string.stats_title)
+                .setIcon(R.drawable.ic_analytics)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        mainToolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == 101) {
+                showPaymentsModule();
+                return true;
+            }
+            if (item.getItemId() == 102) {
+                showStatisticsModule();
+                return true;
+            }
+            return false;
+        });
+
         setupBottomNavigation();
         ensureStaticData();
+        applyDestinationIntent(getIntent());
         MaterialButton startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(v -> openAuthBottomSheet());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        applyDestinationIntent(intent);
+    }
+
+    private void applyDestinationIntent(Intent intent) {
+        if (intent == null || !intent.hasExtra("selected_destination")) return;
+        int destinationId = intent.getIntExtra("selected_destination", R.id.nav_home);
+        selectNavItem(destinationId);
+        showDestination(destinationId);
     }
 
     private void ensureStaticData() {
@@ -255,6 +330,97 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void launchVehiclePhotoPicker() {
+        if (vehiclePhotoPickerLauncher != null) {
+            vehiclePhotoPickerLauncher.launch("image/*");
+        }
+    }
+
+    public void launchReservationPhotoPicker() {
+        if (reservationPhotoPickerLauncher != null) {
+            reservationPhotoPickerLauncher.launch("image/*");
+        }
+    }
+
+    public void navigateToTab(int navId) {
+        selectNavItem(navId);
+        showDestination(navId);
+    }
+
+    public void navigateToNewRental() {
+        selectNavItem(R.id.nav_reservations);
+        showDestination(R.id.nav_reservations);
+        if (reservationController != null) {
+            reservationController.showNewReservationForm();
+        }
+    }
+
+    public void openVehicleDetail(Vehicle vehicle) {
+        selectNavItem(R.id.nav_vehicles);
+        showDestination(R.id.nav_vehicles);
+        if (vehicleController != null) {
+            vehicleController.showDetail(vehicle);
+        }
+    }
+
+    public void openReservationDetail(Reservation reservation) {
+        selectNavItem(R.id.nav_reservations);
+        showDestination(R.id.nav_reservations);
+        if (reservationController != null) {
+            reservationController.showReservationDetail(reservation);
+        }
+    }
+
+    public void showPaymentsModule() {
+        selectNavItem(-1);
+        cacheDisplayedContent();
+        displayedDestinationId = -1;
+        mainToolbar.setTitle(R.string.payment_title);
+        if (paymentController == null) {
+            paymentController = new PaymentController(this, mainContent);
+        }
+        paymentController.showPaymentList();
+    }
+
+    public void openPaymentForReservation(long reservationId) {
+        selectNavItem(-1);
+        cacheDisplayedContent();
+        displayedDestinationId = -1;
+        mainToolbar.setTitle(R.string.payment_title);
+        if (paymentController == null) {
+            paymentController = new PaymentController(this, mainContent);
+        }
+        paymentController.openPaymentForReservation(reservationId);
+    }
+
+    public void showStatisticsModule() {
+        selectNavItem(-1);
+        cacheDisplayedContent();
+        displayedDestinationId = -1;
+        mainToolbar.setTitle(R.string.stats_title);
+        if (statisticsController == null) {
+            statisticsController = new StatisticsController(this, mainContent);
+        }
+        statisticsController.showStatisticsModule();
+    }
+
+    public void showVehicleStatistics(long vehicleId) {
+        selectNavItem(-1);
+        cacheDisplayedContent();
+        displayedDestinationId = -1;
+        mainToolbar.setTitle(R.string.stats_title);
+        if (statisticsController == null) {
+            statisticsController = new StatisticsController(this, mainContent);
+        }
+        statisticsController.showVehicleStatistics(vehicleId);
+    }
+
+    private void cacheDisplayedContent() {
+        if (mainContent.getChildCount() > 0) {
+            destinationViews.put(displayedDestinationId, mainContent.getChildAt(0));
+        }
+    }
+
     private void setupBottomNavigation() {
         int[] ids = {R.id.nav_home, R.id.nav_vehicles, R.id.nav_reservations, R.id.nav_users, R.id.nav_profile};
         for (int id : ids) {
@@ -289,23 +455,65 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDestination(int itemId) {
+        if (itemId == displayedDestinationId && mainContent.getChildCount() > 0
+                && itemId != R.id.nav_users && itemId != R.id.nav_profile) {
+            return;
+        }
+
+        if (mainContent.getChildCount() > 0) {
+            destinationViews.put(displayedDestinationId, mainContent.getChildAt(0));
+        }
         mainContent.removeAllViews();
+        displayedDestinationId = itemId;
         findViewById(R.id.appBar).setVisibility(View.VISIBLE);
         if (itemId == R.id.nav_home) {
             mainToolbar.setTitle(R.string.nav_home);
-            addPlaceholder(
-                    getString(R.string.nav_home),
-                    "Resumen de reservas, vehículos disponibles y actividad reciente.");
+            View cached = destinationViews.get(itemId);
+            if (cached != null) {
+                mainContent.addView(cached);
+                animateMainContent();
+                return;
+            }
+            if (homeController == null) {
+                homeController = new HomeController(this, mainContent);
+            }
+            homeController.showHome();
+            if (mainContent.getChildCount() > 0) {
+                destinationViews.put(itemId, mainContent.getChildAt(0));
+            }
+            animateMainContent();
         } else if (itemId == R.id.nav_vehicles) {
             mainToolbar.setTitle(R.string.nav_vehicles);
-            addPlaceholder(
-                    getString(R.string.nav_vehicles),
-                    "Inventario, disponibilidad, mantenimiento y precios de vehículos.");
+            View cached = destinationViews.get(itemId);
+            if (cached != null) {
+                mainContent.addView(cached);
+                animateMainContent();
+                return;
+            }
+            if (vehicleController == null) {
+                vehicleController = new VehicleController(this, mainContent);
+            }
+            vehicleController.showCatalog();
+            if (mainContent.getChildCount() > 0) {
+                destinationViews.put(itemId, mainContent.getChildAt(0));
+            }
+            animateMainContent();
         } else if (itemId == R.id.nav_reservations) {
             mainToolbar.setTitle(R.string.nav_reservations);
-            addPlaceholder(
-                    getString(R.string.nav_reservations),
-                    "Reservas pendientes, activas, completadas y canceladas.");
+            View cached = destinationViews.get(itemId);
+            if (cached != null) {
+                mainContent.addView(cached);
+                animateMainContent();
+                return;
+            }
+            if (reservationController == null) {
+                reservationController = new ReservationController(this, mainContent);
+            }
+            reservationController.showReservationList();
+            if (mainContent.getChildCount() > 0) {
+                destinationViews.put(itemId, mainContent.getChildAt(0));
+            }
+            animateMainContent();
         } else if (itemId == R.id.nav_users) {
             startActivity(new Intent(this, UserManagementActivity.class));
             overridePendingTransition(R.anim.nav_enter, R.anim.nav_exit);
@@ -313,6 +521,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, ProfileActivity.class));
             overridePendingTransition(R.anim.nav_enter, R.anim.nav_exit);
         }
+    }
+
+    private void animateMainContent() {
+        mainContent.clearAnimation();
+        mainContent.startAnimation(
+                AnimationUtils.loadAnimation(this, R.anim.nav_enter));
     }
 
     private void addPlaceholder(String title, String description) {
@@ -335,11 +549,26 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (appShell != null && appShell.getVisibility() == View.VISIBLE
-                && selectedNavId != R.id.nav_home) {
-            selectNavItem(R.id.nav_home);
-            showDestination(R.id.nav_home);
-            return;
+        if (appShell != null && appShell.getVisibility() == View.VISIBLE) {
+            if (statisticsController != null && statisticsController.handleBackPressed()) {
+                return;
+            }
+            if (paymentController != null && paymentController.handleBackPressed()) {
+                return;
+            }
+            if (selectedNavId == R.id.nav_vehicles && vehicleController != null
+                    && vehicleController.handleBackPressed()) {
+                return;
+            }
+            if (selectedNavId == R.id.nav_reservations && reservationController != null
+                    && reservationController.handleBackPressed()) {
+                return;
+            }
+            if (selectedNavId != R.id.nav_home) {
+                selectNavItem(R.id.nav_home);
+                showDestination(R.id.nav_home);
+                return;
+            }
         }
         super.onBackPressed();
     }

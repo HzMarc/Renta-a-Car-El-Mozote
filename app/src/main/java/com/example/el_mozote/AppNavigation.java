@@ -111,6 +111,19 @@ public final class AppNavigation {
     }
 
     private static void navigate(AppCompatActivity activity, int destinationId) {
+        if (destinationId == R.id.nav_home
+                || destinationId == R.id.nav_vehicles
+                || destinationId == R.id.nav_reservations) {
+            Intent intent = new Intent(activity, MainActivity.class);
+            intent.putExtra("selected_destination", destinationId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.nav_enter, R.anim.nav_exit);
+            return;
+        }
+
         int currentId = activity instanceof MainActivity ? R.id.nav_home
                 : activity instanceof VehiclesActivity ? R.id.nav_vehicles
                 : activity instanceof ReservationsActivity ? R.id.nav_reservations
@@ -125,7 +138,7 @@ public final class AppNavigation {
                 : ProfileActivity.class;
 
         Intent intent = new Intent(activity, destination);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.nav_enter, R.anim.nav_exit);
     }

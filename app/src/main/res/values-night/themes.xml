@@ -4,6 +4,11 @@
         <item name="colorPrimary">@color/emerald_vibrant</item>
         <item name="colorPrimaryContainer">@color/emerald_container_light</item>
         <item name="colorOnPrimaryContainer">@color/emerald_on_container_light</item>
+        <item name="android:textColor">@color/obsidian_navy</item>
+        <item name="android:textColorPrimary">@color/obsidian_navy</item>
+        <item name="android:textColorHint">@color/slate_muted</item>
+        <item name="android:editTextColor">@color/obsidian_navy</item>
+        <item name="editTextColor">@color/obsidian_navy</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

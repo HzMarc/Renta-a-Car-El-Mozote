@@ -53,6 +53,12 @@ public class UserManagementActivity extends AppCompatActivity {
         showUserManagement();
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.nav_exit, R.anim.nav_enter);
+    }
+
     private void setupSampleUsers() {
         users.clear();
         SharedPreferences preferences = getSharedPreferences("el_mozote", MODE_PRIVATE);
